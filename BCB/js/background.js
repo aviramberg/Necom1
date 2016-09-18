@@ -34,15 +34,15 @@ chrome.runtime.onMessage.addListener(
     if(request.message === "neurosteerData") {
       var features = request.data;
       
-      if (sleep.length > 10) {
+      if (sleep.length > 7) {
         sleep = [];
       }
       
-      if (happy.length > 10) {
+      if (happy.length > 6) {
         happy = [];
       }
       
-      if (features.beta <= -0.69) {
+      if (features.beta <= -0.65 ) {
         sleep.push(true);
         
         if (checkSleep(true) && !wasSleep) {
@@ -78,29 +78,39 @@ chrome.runtime.onMessage.addListener(
         }
       } else {
         c1.push(false);
-        if (checkC1(false)) {
-          c1 = [];
-          
-          chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            var activeTab = tabs[0];
-            chrome.tabs.sendMessage(activeTab.id, {"message": "zoomOut"});
-          });
-        }
-      }
-      
-      // cause im happy
-      if (features.delta <= -0.5 && fetuare.h2 <= -0.5) {
+                                // cause im happy
+      if (features.c1 <= 0.8 && features.gamma >= 0.20) {
         happy.push(true);
         
         if (checkHappy(true)) {
           happy = [];
           chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             var activeTab = tabs[0];
-            chrome.tabs.sendMessage(activeTab.id, {"message": "happy"});
-           });
+            if (checkC1(false)) {
+            c1 = [];
+            chrome.tabs.sendMessage(activeTab.id, {"message": "happy", "c1": false});
+            } else {
+                chrome.tabs.sendMessage(activeTab.id, {"message": "happy", "c1": true});
+            }
+          });
         }
       } else {
         happy.push(false);
+        if (checkC1(false)) {
+          c1 = [];
+          chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            var activeTab = tabs[0];
+            chrome.tabs.sendMessage(activeTab.id, {"message": "zoomOut"});
+          });
+        } 
+        
+      }
+  
+
+
+        
+        
+        
       }
       
       
@@ -129,14 +139,14 @@ function checkC1(bool) {
 }
 
 function checkSleep(bool) {
-  if ((sleep.filter(equale(bool)).length - sleep.filter(equale(!bool)).length) >= 4) {
+  if ((sleep.filter(equale(bool)).length - sleep.filter(equale(!bool)).length) >= 3) {
     return true;
   }
   return false;
 }
 
 function checkHappy(bool) {
-  if ((happy.filter(equale(bool)).length - happy.filter(equale(!bool)).length) >= 4) {
+  if ((happy.filter(equale(bool)).length - happy.filter(equale(!bool)).length) >= 3) {
     return true;
   }
   return false;

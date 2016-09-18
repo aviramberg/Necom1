@@ -2,7 +2,7 @@
 
 // Constants
 
-var host = 'wss://api.neurosteer.com/api/v1/features/000666046289/real-time/?all=true&access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJQZjVEajF1QmRqTWhoVFFIbHVNbXBheFQiLCJlbWFpbCI6ImF2aXJhbS5iZXJnQG1haWwuaHVqaS5hYy5pbCIsImlhdCI6MTQ3NDE3NTQwNywiZXhwIjoxNDc0MTg5ODA3fQ.gE4368sioYfM_egskdb_LHQrdXI0ueFlixHbJZaowEE';
+var host = 'wss://api.neurosteer.com/api/v1/features/000666046289/real-time/?all=true&access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJZZVpYOW5Bb2V6NWdEdWFiRGE3MXVub1IiLCJlbWFpbCI6ImF2aXJhbS5iZXJnQG1haWwuaHVqaS5hYy5pbCIsImlhdCI6MTQ3NDE5NDQ1MSwiZXhwIjoxNDc0MjA4ODUxfQ.QgVtBtrUX412whuJykgPMy4YlqZwiPavwzaruNd7JtU';
 
 var defualtWinSize = 100;
 var currentWinSize = 100;
@@ -55,7 +55,7 @@ chrome.runtime.onMessage.addListener(
             socket.onmessage = function (event) {
             record = eval("(" + event.data + ")"); // convert to JSON
             // console.log(record.features.e1);
-            console.log(record.features.h2, record.features.delta);
+            console.log(record.features.gamma, record.features.c1, record.features.sigma, record.features.alpha);
             chrome.runtime.sendMessage({"message": "neurosteerData", "data": record.features});
             };
            socket.onopen = function (event) {
@@ -114,6 +114,10 @@ chrome.runtime.onMessage.addListener(
     }
     
     if (request.message === "happy") {
+      console.log("user happy");
+      if (!request.c1) {
+         zoomOut();
+      }
       if ($.inArray(document.title, downloads)) {
         if (confirm("We see that you liked the video, do you want to download it?")) {
           chrome.runtime.sendMessage({"message": "download", "name" : document.title, "url":document.URL});
